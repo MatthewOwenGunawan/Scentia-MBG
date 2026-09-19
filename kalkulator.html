@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scentia MBG - Cek Gizi</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .lang-btn { background: transparent; border: 1px solid var(--primary); color: var(--primary); padding: 5px 10px; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.3s; margin: 0; }
+        .lang-btn:hover { background: var(--primary); color: white; }
+        .edukasi-box { background: #fff3cd; border-left: 4px solid #ff9800; padding: 1rem; border-radius: 4px; margin-top: 1rem; text-align: left; font-size: 0.9rem; color: #555; }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 4 13c0-3.5 3-7 8-11 5 4 8 7.5 8 11a7 7 0 0 1-7 7Z"></path><path d="M12 22v-9"></path></svg>
+                Scentia MBG
+            </div>
+            
+            <ul class="nav-links" id="navMenu">
+                <li><a href="index.html" data-i18n="nav-home">Beranda</a></li>
+                <li><a href="kalkulator.html" data-i18n="nav-calc" style="color: var(--primary); font-weight: bold;">Cek Gizi</a></li>
+                <li><a href="lapor.html" data-i18n="nav-report">Lapor & review</a></li>
+            </ul>
+
+            <div class="nav-right">
+                <button class="lang-btn" onclick="toggleLanguage()" id="langToggle">🌐 EN</button>
+                <div id="auth-container"></div>
+                <div class="menu-toggle" id="mobile-menu">
+                    <span></span><span></span><span></span>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <section class="page-hero">
+        <h1 data-i18n="page-title">Cek Gizi & Jadwal Menu</h1>
+        <p data-i18n="page-desc">Pantau menu harian aktif dari BGN dan pantau status gizi anak secara instan.</p>
+    </section>
+
+    <div class="container container-grid">
+        <div class="card">
+            <h2 class="section-title" data-i18n="menu-title">Jadwal Menu MBG (Data Real-Time)</h2>
+            <p style="color: #555; margin-bottom: 1.5rem;" data-i18n="menu-desc">Menu tersinkronisasi dengan jadwal Badan Gizi Nasional hari ini.</p>
+            
+            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                <div style="background: #f5f7fa; padding: 1.5rem; border-left: 4px solid var(--secondary); border-radius: 4px;">
+                    <p style="font-size: 0.9rem; color: #777; margin-bottom: 5px;" data-i18n="menu-active">Menu Aktif Hari Ini:</p>
+                    <h3 style="color: var(--text-dark);" id="menu-title-data">Mengambil data...</h3>
+                </div>
+                
+                <div style="background: #e8f5e9; padding: 1.5rem; border-radius: 8px; text-align: center;">
+                    <p style="font-size: 0.9rem; margin-bottom: 5px;" data-i18n="menu-cals">Total Kalori Estimasi:</p>
+                    <h2 style="color: var(--primary); font-size: 2.5rem;" id="menu-kalori">... kcal</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="section-title" data-i18n="rapor-title">Cek Tumbuh Kembang Anak</h2>
+            <p style="color: #555; margin-bottom: 1.5rem;" data-i18n="rapor-desc">Masukkan berat dan tinggi badan anak saat ini untuk memantau status gizinya secara instan.</p>
+            
+            <form class="report-form" onsubmit="event.preventDefault(); cekRapor();">
+                <label data-i18n="rapor-age">Usia Anak (bulan)</label>
+                <input type="number" id="rapor-umur" data-i18n-placeholder="rapor-age-ph" placeholder="0-60" required>
+                
+                <label data-i18n="rapor-gender">Jenis Kelamin</label>
+                <select id="rapor-jk" required>
+                    <option value="" data-i18n="rapor-gender-ph">- Pilih -</option>
+                    <option value="L" data-i18n="rapor-m">Laki-laki</option>
+                    <option value="P" data-i18n="rapor-f">Perempuan</option>
+                </select>
+
+                <label data-i18n="rapor-weight">Berat Badan (kg)</label>
+                <input type="number" id="rapor-bb" step="0.1" data-i18n-placeholder="rapor-weight-ph" placeholder="Contoh: 12.5" required>
+
+                <label data-i18n="rapor-height">Tinggi / Panjang Badan (cm)</label>
+                <input type="number" id="rapor-tb" step="0.1" data-i18n-placeholder="rapor-height-ph" placeholder="Contoh: 85.0" required>
+
+                <button type="submit" data-i18n="rapor-btn">Cek Status Gizi Sekarang</button>
+            </form>
+
+            <div id="hasil-rapor" style="display: none; background: #f0f7f4; padding: 1rem; border-radius: 8px; margin-top: 1.5rem; text-align: center; border: 2px solid var(--primary);">
+                <h3 data-i18n="rapor-res-title">Status Gizi (BMI-for-Age):</h3>
+                <h2 id="rapor-status" style="margin: 10px 0;">...</h2>
+                <p><span data-i18n="rapor-bmi">Nilai Skoring:</span> <strong id="rapor-angka">0</strong></p>
+                
+                <div class="edukasi-box">
+                    <strong>💡 <span data-i18n="edu-title">Tips Scentia:</span></strong><br>
+                    <span data-i18n="edu-desc">Asupan gizi harian anak kini sudah didukung penuh oleh program MBG dari Pemerintah. Tugas kita selanjutnya adalah memastikan anak selalu <b>mencuci tangan pakai sabun</b> sebelum makan agar nutrisi yang masuk tidak hilang akibat infeksi cacing atau bakteri!</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer><p>&copy; 2026 Hak Cipta Dilindungi. Dikembangkan oleh <strong>Team Scentia Collective</strong>.</p></footer>
+
+    <div class="wa-float-container">
+        <a href="https://api.whatsapp.com/send/?phone=6281110008008&text&type=phone_number&app_absent=0" target="_blank" class="wa-button">
+            <svg width="35" height="35" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.405-.883-.733-1.479-1.639-1.653-1.937-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a5.816 5.816 0 0 0-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.98 1.005-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.886-9.885 9.886m8.411-18.297A11.815 11.815 0 0 0 12.051 0C5.495 0 .16 5.333.158 11.893c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.65a11.862 11.862 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.332 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
+        </a>
+    </div>
+
+    <script>
+        let currentLang = localStorage.getItem('scentia_lang') || 'id';
+        const dict = {
+            'id': {
+                'nav-home': 'Beranda', 'nav-calc': 'Cek Gizi', 'nav-report': 'Lapor & review',
+                'page-title': 'Cek Gizi & Jadwal Menu', 'page-desc': 'Pantau menu harian aktif dari BGN dan pantau status gizi anak secara instan.',
+                'menu-title': 'Jadwal Menu MBG (Data Real-Time)', 'menu-desc': 'Menu tersinkronisasi dengan jadwal Badan Gizi Nasional hari ini.', 'menu-active': 'Menu Aktif Hari Ini:', 'menu-cals': 'Total Kalori Estimasi:',
+                'rapor-title': 'Cek Tumbuh Kembang Anak', 'rapor-desc': 'Masukkan berat dan tinggi badan anak saat ini untuk memantau status gizinya secara instan.',
+                'rapor-age': 'Usia Anak (bulan)', 'rapor-weight': 'Berat Badan (kg)', 'rapor-height': 'Tinggi / Panjang Badan (cm)', 'rapor-btn': 'Cek Status Gizi Sekarang',
+                'rapor-gender': 'Jenis Kelamin', 'rapor-m': 'Laki-laki', 'rapor-f': 'Perempuan', 'rapor-gender-ph': '- Pilih -',
+                'rapor-res-title': 'Status Gizi (BMI-for-Age):', 'rapor-bmi': 'Nilai Skoring:',
+                'rapor-age-ph': '0-60', 'rapor-weight-ph': 'Contoh: 12.5', 'rapor-height-ph': 'Contoh: 85.0',
+                'edu-title': 'Tips Scentia:', 'edu-desc': 'Asupan gizi harian anak kini sudah didukung penuh oleh program MBG dari Pemerintah. Tugas kita selanjutnya adalah memastikan anak selalu <b>mencuci tangan pakai sabun</b> sebelum makan agar nutrisi yang masuk tidak hilang akibat infeksi cacing atau bakteri!',
+                'wa-help': 'Butuh Bantuan?', 'auth-login': 'Login / Daftar', 'auth-logout': 'Keluar'
+            },
+            'en': {
+                'nav-home': 'Home', 'nav-calc': 'Nutrition Check', 'nav-report': 'Report & Review',
+                'page-title': 'Nutrition Check & Daily Menu', 'page-desc': 'Monitor today\'s active BGN menus and instantly track your child\'s nutritional status.',
+                'menu-title': 'MBG Menu Schedule (Real-Time)', 'menu-desc': 'Menu is synced with today\'s National Nutrition Agency schedule.', 'menu-active': 'Today\'s Active Menu:', 'menu-cals': 'Estimated Total Calories:',
+                'rapor-title': 'Child Growth Check', 'rapor-desc': 'Enter the child\'s current weight and height to instantly monitor their nutritional status.',
+                'rapor-age': 'Child Age (months)', 'rapor-weight': 'Weight (kg)', 'rapor-height': 'Height / Length (cm)', 'rapor-btn': 'Check Nutrition Status Now',
+                'rapor-gender': 'Gender', 'rapor-m': 'Male', 'rapor-f': 'Female', 'rapor-gender-ph': '- Select -',
+                'rapor-res-title': 'Nutritional Status (BMI-for-Age):', 'rapor-bmi': 'Scoring Value:',
+                'rapor-age-ph': '0-60', 'rapor-weight-ph': 'Example: 12.5', 'rapor-height-ph': 'Example: 85.0',
+                'edu-title': 'Scentia Tips:', 'edu-desc': 'Children\'s daily nutritional intake is now fully supported by the Government\'s MBG program. Our next task is to ensure children always <b>wash their hands with soap</b> before eating so that incoming nutrients are not lost due to worm infections or bacteria!',
+                'wa-help': 'Need Help?', 'auth-login': 'Login / Sign Up', 'auth-logout': 'Logout'
+            }
+        };
+
+        const jadwalMenu = [
+            { menu: "Libur (Akhir Pekan)", kalori: "0" }, 
+            { menu: "Nasi Putih, Ayam Teriyaki, Tumis Sayur Hijau, Susu UHT", kalori: "450" },
+            { menu: "Nasi Putih, Telur Dadar Gulung, Sup Makaroni, Buah Pisang", kalori: "420" },
+            { menu: "Nasi Putih, Ikan Goreng Tepung, Sayur Lodeh, Susu Kedelai", kalori: "460" },
+            { menu: "Nasi Putih, Semur Tahu Tempe, Tumis Buncis, Jeruk", kalori: "410" },
+            { menu: "Nasi Goreng Sayur, Telur Ceplok, Potongan Melon", kalori: "480" },
+            { menu: "Libur (Akhir Pekan)", kalori: "0" }
+        ];
+
+        window.applyLanguage = function() {
+            document.getElementById('langToggle').innerText = currentLang === 'id' ? '🌐 EN' : '🌐 ID';
+            document.querySelectorAll('[data-i18n]').forEach(el => { 
+                if(dict[currentLang][el.getAttribute('data-i18n')]) el.innerHTML = dict[currentLang][el.getAttribute('data-i18n')]; 
+            });
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => { 
+                if(dict[currentLang][el.getAttribute('data-i18n-placeholder')]) el.placeholder = dict[currentLang][el.getAttribute('data-i18n-placeholder')]; 
+            });
+
+            const greetEl = document.getElementById("user-greeting");
+            if (greetEl) greetEl.innerText = currentLang === 'id' ? `Halo, ${greetEl.getAttribute("data-username")}!` : `Hello, ${greetEl.getAttribute("data-username")}!`;
+        }
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'id' ? 'en' : 'id';
+            localStorage.setItem('scentia_lang', currentLang);
+            window.applyLanguage();
+        }
+
+        function cekRapor() {
+            const u = document.getElementById('rapor-umur').value, jk = document.getElementById('rapor-jk').value;
+            const bb = parseFloat(document.getElementById('rapor-bb').value), tb = parseFloat(document.getElementById('rapor-tb').value);
+            if(!u || !jk || !bb || !tb) return;
+            const bmi = bb / ((tb/100) * (tb/100));
+            
+            let kategori = "Gizi Baik (Normal)", color = "green";
+            if (bmi < 13.5) { kategori = "Gizi Kurang (Risiko Wasting/Stunting)"; color = "red"; }
+            else if (bmi > 18.5) { kategori = "Gizi Lebih (Risiko Overweight)"; color = "orange"; }
+
+            if(currentLang === 'en') {
+                if(kategori.includes("Baik")) kategori = "Good Nutrition (Normal)";
+                if(kategori.includes("Kurang")) kategori = "Undernourished (Wasting Risk)";
+                if(kategori.includes("Lebih")) kategori = "Overnourished (Overweight Risk)";
+            }
+
+            document.getElementById('hasil-rapor').style.display = 'block'; 
+            document.getElementById('rapor-angka').innerText = bmi.toFixed(2);
+            document.getElementById('rapor-status').innerText = kategori; 
+            document.getElementById('rapor-status').style.color = color;
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            window.applyLanguage();
+            const day = new Date().getDay();
+            document.getElementById('menu-title-data').innerText = jadwalMenu[day].menu;
+            document.getElementById('menu-kalori').innerText = jadwalMenu[day].kalori + " kcal";
+        });
+
+        document.getElementById('mobile-menu').addEventListener('click', () => {
+            document.getElementById('navMenu').classList.toggle('active');
+        });
+    </script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        const firebaseConfig = { apiKey: "AIzaSyArLsNgZ1nprLhQ9JwTIvCAouSQnuPUtvQ", authDomain: "mbg-web---scentia.firebaseapp.com", projectId: "mbg-web---scentia", storageBucket: "mbg-web---scentia.firebasestorage.app", messagingSenderId: "548065853537", appId: "1:548065853537:web:4f81552ddeb455c4cc6a20" };
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const authContainer = document.getElementById("auth-container");
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                const userName = user.displayName || user.email.split('@')[0];
+                authContainer.innerHTML = `<div style="display: flex; align-items: center; gap: 10px;"><span id="user-greeting" data-username="${userName}" class="user-greet-text" style="font-weight: bold; color: var(--primary);"></span><button id="logout-btn" class="lang-btn" style="border-color: #d32f2f; color: #d32f2f; padding: 5px 10px; margin: 0; cursor: pointer; white-space: nowrap;" data-i18n="auth-logout"></button></div>`;
+                document.getElementById("logout-btn").addEventListener("click", () => { signOut(auth).then(() => window.location.reload()); });
+            } else {
+                authContainer.innerHTML = `<a href="login.html" class="btn-report" style="padding: 5px 15px; font-size: 0.9rem; margin: 0;" data-i18n="auth-login"></a>`;
+            }
+            if(window.applyLanguage) window.applyLanguage();
+        });
+    </script>
+</body>
+</html>

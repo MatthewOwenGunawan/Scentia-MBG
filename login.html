@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scentia MBG - Login / Daftar</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { background-color: #a28581; display: flex; flex-direction: column; min-height: 100vh; }
+        header { background-color: rgba(255, 255, 255, 0.9); }
+        .lang-btn { background: transparent; border: 1px solid var(--primary); color: var(--primary); padding: 5px 10px; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.3s; margin: 0; }
+        .lang-btn:hover { background: var(--primary); color: white; }
+        .login-wrapper { flex: 1; display: flex; align-items: center; justify-content: center; padding: 2rem; }
+        .login-card { display: flex; background: #ffffff; border-radius: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.2); width: 100%; max-width: 900px; min-height: 550px; overflow: hidden; padding: 10px; }
+        .login-left { flex: 1; padding: 40px; display: flex; flex-direction: column; justify-content: center; }
+        .login-left h2 { font-size: 2.5rem; margin-bottom: 2rem; color: #000; }
+        .input-group { margin-bottom: 1.2rem; display: flex; flex-direction: column; }
+        .input-group label { font-size: 0.85rem; color: #aaa; margin-bottom: 5px; }
+        .input-wrapper { display: flex; align-items: center; border: 1px solid #ddd; border-radius: 8px; padding: 10px 15px; transition: 0.3s; }
+        .input-wrapper:focus-within { border-color: #68f0cb; }
+        .input-wrapper input { border: none; outline: none; width: 100%; font-size: 1rem; color: #333; }
+        .input-icon { margin-right: 10px; color: #777; }
+        .eye-icon { margin-left: auto; color: #777; cursor: pointer; transition: color 0.2s; }
+        .eye-icon:hover { color: #333; }
+        .forgot-link { text-align: right; font-size: 0.75rem; color: #999; text-decoration: none; margin-top: -5px; margin-bottom: 20px; display: block; font-weight: bold; }
+        .btn-main { background-color: #68f0cb; color: white; border: none; padding: 12px; border-radius: 8px; font-size: 1.2rem; font-weight: bold; cursor: pointer; transition: 0.3s; width: 100%; margin-bottom: 15px; }
+        .btn-main:hover { background-color: #55d6b3; }
+        .btn-google { background-color: white; color: #000; border: 1px solid #ddd; padding: 10px; border-radius: 20px; font-size: 1rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; width: 100%; }
+        .btn-google:hover { background-color: #f5f5f5; }
+        .btn-google svg { width: 20px; height: 20px; }
+        .toggle-text-container { margin-top: auto; font-size: 0.8rem; color: #777; }
+        .toggle-text-container a { color: #777; font-weight: bold; font-size: 1.1rem; display: block; text-decoration: none; margin-top: 5px; }
+        .login-right { flex: 1; background-color: #a1a3c6; border-radius: 20px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .login-right img { width: 100%; height: 100%; object-fit: cover; }
+        @media (max-width: 768px) { .login-card { flex-direction: column; min-height: auto; } .login-right { display: none; } .login-left { padding: 30px 20px; } }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">Scentia MBG</div>
+            <ul class="nav-links">
+                <li><a href="index.html" data-i18n="nav-home">Beranda</a></li>
+            </ul>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <button class="lang-btn" onclick="toggleLanguage()" id="langToggle">🌐 EN</button>
+            </div>
+        </nav>
+    </header>
+
+    <div class="login-wrapper">
+        <div class="login-card">
+            <div class="login-left">
+                <h2 id="form-title" data-i18n="auth-title-login">Sign In</h2>
+                <form id="auth-form">
+                    <div class="input-group">
+                        <label data-i18n="auth-email">Email</label>
+                        <div class="input-wrapper">
+                            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                <polyline points="22,6 12,13 2,6"></polyline>
+                            </svg>
+                            <input type="email" id="email" placeholder="example: owo@gmail.com" required>
+                        </div>
+                    </div>
+                    <div class="input-group" style="margin-bottom: 5px;">
+                        <label data-i18n="auth-pass">Password</label>
+                        <div class="input-wrapper">
+                            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            </svg>
+                            <input type="password" id="password" placeholder="********" required>
+                            <svg class="eye-icon" id="toggle-password" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </div>
+                    </div>
+                    <a href="#" class="forgot-link" data-i18n="auth-forgot">Recovery Password</a>
+                    <button type="submit" class="btn-main" id="submit-btn" data-i18n="auth-btn-login">Sign In</button>
+                </form>
+                <button type="button" class="btn-google" id="google-btn">
+                    <svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/><path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/><path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/><path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/></svg>
+                    <span data-i18n="auth-google">Continue with Google</span>
+                </button>
+                <div class="toggle-text-container">
+                    <span id="toggle-text" data-i18n="auth-ask-login">Ga punya akun???? GA PUNYA AKUN??</span>
+                    <a href="#" id="toggle-mode" data-i18n="auth-link-login">Sign Up</a>
+                </div>
+            </div>
+            <div class="login-right">
+                <img src="asset/gess.jpg" alt="Login Image">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('toggle-password').addEventListener('click', function() {
+            const passInput = document.getElementById('password');
+            if (passInput.type === 'password') {
+                passInput.type = 'text'; 
+                this.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>';
+            } else {
+                passInput.type = 'password'; 
+                this.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
+            }
+        });
+    </script>
+
+    <script>
+        window.currentLang = localStorage.getItem('scentia_lang') || 'id';
+        const dict = {
+            'id': {
+                'nav-home': 'Beranda',
+                'auth-title-login': 'Sign In', 'auth-btn-login': 'Sign In', 'auth-ask-login': 'Ga punya akun???? GA PUNYA AKUN??', 'auth-link-login': 'Sign Up',
+                'auth-title-reg': 'Sign Up', 'auth-btn-reg': 'Sign Up', 'auth-ask-reg': 'Udah punya akun kah??', 'auth-link-reg': 'Sign In',
+                'auth-email': 'Email', 'auth-pass': 'Password', 'auth-forgot': 'Recovery Password', 'auth-google': 'Continue with Google'
+            },
+            'en': {
+                'nav-home': 'Home',
+                'auth-title-login': 'Sign In', 'auth-btn-login': 'Sign In', 'auth-ask-login': 'Don\'t have an account?', 'auth-link-login': 'Sign Up',
+                'auth-title-reg': 'Sign Up', 'auth-btn-reg': 'Sign Up', 'auth-ask-reg': 'Already have an account?', 'auth-link-reg': 'Sign In',
+                'auth-email': 'Email', 'auth-pass': 'Password', 'auth-forgot': 'Recovery Password', 'auth-google': 'Continue with Google'
+            }
+        };
+
+        window.applyLanguage = function() {
+            document.getElementById('langToggle').innerText = window.currentLang === 'id' ? '🌐 EN' : '🌐 ID';
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                if(dict[window.currentLang][el.getAttribute('data-i18n')]) el.innerHTML = dict[window.currentLang][el.getAttribute('data-i18n')];
+            });
+        };
+
+        function toggleLanguage() {
+            window.currentLang = window.currentLang === 'id' ? 'en' : 'id';
+            localStorage.setItem('scentia_lang', window.currentLang);
+            window.applyLanguage();
+        }
+
+        document.addEventListener("DOMContentLoaded", () => window.applyLanguage());
+    </script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyArLsNgZ1nprLhQ9JwTIvCAouSQnuPUtvQ",
+          authDomain: "mbg-web---scentia.firebaseapp.com",
+          projectId: "mbg-web---scentia",
+          storageBucket: "mbg-web---scentia.firebasestorage.app",
+          messagingSenderId: "548065853537",
+          appId: "1:548065853537:web:4f81552ddeb455c4cc6a20"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const googleProvider = new GoogleAuthProvider();
+
+        let isLoginMode = true;
+        
+        document.getElementById("toggle-mode").addEventListener("click", (e) => {
+            e.preventDefault();
+            isLoginMode = !isLoginMode;
+            
+            document.getElementById("form-title").setAttribute("data-i18n", isLoginMode ? "auth-title-login" : "auth-title-reg");
+            document.getElementById("submit-btn").setAttribute("data-i18n", isLoginMode ? "auth-btn-login" : "auth-btn-reg");
+            document.getElementById("toggle-text").setAttribute("data-i18n", isLoginMode ? "auth-ask-login" : "auth-ask-reg");
+            document.getElementById("toggle-mode").setAttribute("data-i18n", isLoginMode ? "auth-link-login" : "auth-link-reg");
+            
+            window.applyLanguage(); 
+        });
+
+        document.getElementById("auth-form").addEventListener("submit", (e) => {
+            e.preventDefault();
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+
+            if (isLoginMode) {
+                signInWithEmailAndPassword(auth, email, password)
+                    .then(() => window.location.href = "index.html")
+                    .catch((error) => alert("Gagal login: " + error.message));
+            } else {
+                createUserWithEmailAndPassword(auth, email, password)
+                    .then(() => {
+                        alert(window.currentLang === 'id' ? "Pendaftaran berhasil! Silakan Sign In." : "Sign up successful! Please Sign In.");
+                        window.location.reload();
+                    })
+                    .catch((error) => alert("Gagal daftar: " + error.message));
+            }
+        });
+
+        document.getElementById("google-btn").addEventListener("click", () => {
+            signInWithPopup(auth, googleProvider)
+                .then((result) => {
+                    window.location.href = "index.html";
+                })
+                .catch((error) => {
+                    alert("Gagal login dengan Google: " + error.message);
+                });
+        });
+    </script>
+</body>
+</html>
